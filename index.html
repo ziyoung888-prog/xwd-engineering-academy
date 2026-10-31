@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>XWD Engineering Academy</title>
+<style>
+:root{font-family:Inter,"Microsoft YaHei",system-ui,sans-serif;color:#17263c;background:#f3f6fb}*{box-sizing:border-box}body{margin:0}header{background:#101e36;color:white;padding:24px max(20px,calc((100vw - 1080px)/2))}header small{color:#a9c6e8;letter-spacing:.12em}header h1{margin:8px 0 4px;font-size:clamp(24px,4vw,38px)}header p{color:#c7d3e4;margin:0}main{max-width:1080px;margin:28px auto;padding:0 20px 70px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.card{background:white;border:1px solid #e0e7f0;border-radius:14px;padding:22px;box-shadow:0 5px 20px #13294c08}.metric{font-size:29px;font-weight:750;color:#1b62b6;margin-top:8px}h2{margin:0 0 14px;font-size:21px}h3{margin:0 0 8px}p{line-height:1.75}button{border:0;border-radius:9px;background:#1b62b6;color:white;padding:11px 17px;font:inherit;cursor:pointer}button:hover{background:#134c92}button.secondary{background:#e8f0fa;color:#194b85}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0}.toolbar button{background:#e8edf6;color:#334d6c}.toolbar button.active{background:#1b62b6;color:white}.lesson{margin:14px 0}.muted{color:#60718a}.pill{display:inline-block;background:#e8f3ff;color:#17559b;border-radius:30px;padding:4px 10px;font-size:12px;margin-bottom:10px}.lesson button{margin-top:8px}article{background:white;border:1px solid #e0e7f0;border-radius:14px;padding:clamp(20px,4vw,40px)}article section{border-top:1px solid #edf0f5;padding-top:17px;margin-top:19px}article li{margin:8px 0;line-height:1.7}.question{background:#f6f9fd;border:1px solid #e1eaf4;border-radius:10px;padding:16px;margin:14px 0}.question label{display:block;margin:10px 0}.question input{margin-right:8px}.notice{background:#fff7e7;border-left:4px solid #c98c1a;padding:13px 17px;border-radius:6px;line-height:1.6}.row{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}footer{margin-top:25px;color:#6c7b8c;font-size:13px}@media(max-width:680px){.grid{grid-template-columns:1fr}header{padding:25px 20px}} 
+</style></head><body><header><small>INDEPENDENT LEARNING PROJECT · PUBLIC EDUCATIONAL CONTENT</small><h1>XWD Engineering Academy</h1><p>AIDC 储能系统电气工程师 · 学习、应用与复习</p></header><main>
+<div class="notice">公开教学演示版：仅使用通用知识和虚构案例，不包含公司内部资料。学习记录仅保存在当前浏览器，不会跨设备同步。</div>
+<div class="grid" style="margin-top:20px"><div class="card"><div class="muted">课程数量</div><div class="metric" id="count">—</div></div><div class="card"><div class="muted">已完成课程</div><div class="metric" id="completed">—</div></div><div class="card"><div class="muted">待复习课程</div><div class="metric" id="due">—</div></div></div>
+<div class="toolbar"><button id="tab-courses" class="active" onclick="tab('courses')">课程库</button><button id="tab-review" onclick="tab('review')">间隔复习</button><button id="tab-about" onclick="tab('about')">使用说明</button></div>
+<div id="view"></div><footer>© XWD Engineering Academy · Independent public learning prototype · No company data</footer></main>
+<script>
+const lessons=[{id:'contactor',category:'器件选型与验证',title:'直流接触器：额定电流、耐受与分断的区别',time:20,sections:[
+['一句话核心判断','接触器能持续承载某电流，不代表能在相同电流下安全分断，更不代表能主动切断预期短路电流。'],
+['为什么要做','避免将额定通流、短时耐受、正常负载分断和故障分断混为一谈，造成器件选型与保护配合错误。'],
+['底层原理与因果链','通流时主要关注接触电阻引起的 I²R 损耗和温升；分断时触点分离形成电弧，直流没有自然过零点，灭弧能力受电压、电流、回路电感和触点运动影响。'],
+['在 AIDC 项目中的位置','接触器位于电池主回路，配合 BMS 控制、熔断器或断路器完成正常操作与异常保护。具体职责由系统保护架构定义。'],
+['工程师实际怎么做','先确定工作电压、电流、环境与降额；再定义正常操作次数、带载分断要求、短路期间状态和保护器件动作时序；逐项核对规格书与试验报告。'],
+['常见错误与失效模式','将 600A 额定通流理解为 600A 任意条件可分断；将 8kA/10ms 短时耐受理解为 8kA 主动分断；忽略线圈驱动电压范围。'],
+['与已学知识的连接','与熔断器的故障清除职责、接触器温升测试和供应商报告适用性审查直接相关。'],
+['主动回忆','① 额定通流和主动分断有什么区别？② 为什么直流电弧更难熄灭？③ 为什么需要核对回路电感？④ 短路保护中熔断器和接触器如何分工？'],
+['工程情景题','教学假设：电池系统工作电流 400A，预期短路电流 6kA，接触器额定 600A。能否据此批准选型？请列出至少 4 项仍需核验的证据。'],
+['达到“会”的标准','能够独立解释四种电流能力，识别保护职责，并形成“要求—证据—缺口—结论”核对表。']],q:'以下哪项判断正确？',opts:['额定通流 600A 就一定能分断 600A','短时耐受 8kA 就一定能主动分断 8kA','通流、短时耐受和主动分断必须分别核验'],answer:2,explain:'三种能力对应不同物理过程和测试条件，不能互相替代。'},
+{id:'thermal',category:'测试与验证',title:'两组温度曲线：怎样判断数据是否可比？',time:20,sections:[
+['一句话核心判断','温度曲线能否支持设计决策，先看测试条件和测量链路是否可比，再看数值差异。'],
+['为什么要做','避免将环境温度、测点位置、热负载或时间基准造成的差异误判为器件性能差异。'],
+['底层原理与因果链','对流散热受表面与环境温差、风速和风道影响。不同初始温度与环境条件会改变降温驱动力；不同采样时钟会导致曲线错位。'],
+['在 AIDC 项目中的位置','用于风扇替代、机柜热设计、老化试验、温升评估及故障定位。'],
+['工程师实际怎么做','统一热负载、环境、测点、采样周期与工步时间；记录原始数据；计算最大温升和平均降温速率；在预先冻结的判据下评审。'],
+['常见错误与失效模式','只比最高绝对温度；测试后修改合格标准；将 BMU 与外部数采不同位置的读数直接相减。'],
+['与已学知识的连接','延伸风扇替代验证与接触器温升试验的控制变量方法。'],
+['主动回忆','① 为什么最高温度不能直接比较？② 为什么需要共同事件对齐时间？③ 数采通道不足怎么办？④ 为什么要提前冻结判据？'],
+['工程情景题','教学假设：A 的环境温度 25℃、最高温度 46℃；B 的环境温度 28℃、最高温度 47℃。分别计算温升，并判断能否直接认定 B 更差。'],
+['达到“会”的标准','能独立建立测温与采样确认表、计算温升、识别干扰因素并提出补测方案。']],q:'A 环境 25℃、最高 46℃；B 环境 28℃、最高 47℃。正确判断是？',opts:['B 的绝对温度更高，所以散热一定更差','A 温升 21℃、B 温升 19℃，但仍需检查可比条件','B 温升 22℃'],answer:1,explain:'最大环境温升分别为 21℃ 和 19℃，但两次环境不同，仍需检查测试边界与重复性。'},
+{id:'fuse',category:'保护配合',title:'熔断器：额定电流、最小分断与最大分断',time:20,sections:[
+['一句话核心判断','熔断器不是“电流超过额定值就立即熔断”，其保护效果取决于时间—电流特性、回路条件和分断能力。'],
+['为什么要做','避免在正常冲击时误熔断，或在故障电流范围内无法可靠清除故障。'],
+['底层原理与因果链','熔体因电流热效应积累能量而熔化；故障清除还包含电弧阶段，时间、电压和回路条件均影响结果。'],
+['在 AIDC 项目中的位置','与主回路接触器、母排、线缆和电池短路能力共同构成保护配合。'],
+['工程师实际怎么做','确认工作电流、环境降额、预期故障电流范围、时间—电流曲线、I²t、分断能力与保护协调要求。'],
+['常见错误与失效模式','只按额定电流选型；忽略直流额定电压；将最大分断能力理解为任何小故障电流都能可靠清除。'],
+['与已学知识的连接','与接触器短时耐受、系统故障电流估算和线缆热稳定校核相连。'],
+['主动回忆','① 熔断器为何不会在略高于额定电流时立即动作？② 什么是时间—电流曲线？③ 为什么要看最小和最大分断条件？'],
+['工程情景题','教学假设：系统持续电流 400A，存在短时启动冲击，故障电流范围待确认。仅凭 500A 额定熔断器能否选型？请说明缺失输入。'],
+['达到“会”的标准','能列出选型输入、识别冲击与故障保护冲突，并说明需要哪些曲线与试验报告。']],q:'熔断器选型最合理的方法是？',opts:['只要求额定电流大于工作电流','只看最大分断能力','结合工作电流、冲击、时间—电流特性、直流电压和故障电流范围'],answer:2,explain:'熔断器选型必须兼顾正常运行不误动作与故障可靠清除。'}];
+const key='xwd_academy_progress_v1';let state={};try{state=JSON.parse(localStorage.getItem(key)||'{}')}catch(e){}const save=()=>{try{localStorage.setItem(key,JSON.stringify(state))}catch(e){alert('浏览器不允许保存进度，请使用非隐私模式或手动记录。')}};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const day=86400000;function dueDate(p){if(!p||!p.completed)return null;let n=p.reviewCount||0;return p.lastReviewed+([1,3,7,30][Math.min(n,3)]*day)}function stats(){document.getElementById('count').textContent=lessons.length;document.getElementById('completed').textContent=Object.values(state).filter(x=>x.completed).length;document.getElementById('due').textContent=lessons.filter(x=>dueDate(state[x.id])!==null&&dueDate(state[x.id])<=Date.now()).length}
+function tab(name){document.querySelectorAll('.toolbar button').forEach(x=>x.classList.toggle('active',x.id==='tab-'+name));let v=document.getElementById('view');if(name==='about'){v.innerHTML='<div class="card"><h2>使用说明</h2><p>本项目与私人工程资料仓库完全隔离。当前课程均为通用教学内容和假设案例。</p><p>完成课程后可参加单题知识检查；通过后安排第 1、3、7、30 天复习。复习时间按上次成功复习时间计算。</p><p>进度仅保存在当前浏览器的 localStorage 中，无法自动跨设备同步，清除网站数据后可能丢失。</p><p>此站点公开访问，请勿填写或上传公司内部信息、真实项目参数及其他敏感资料。</p></div>';return}let arr=name==='review'?lessons.filter(x=>state[x.id]?.completed):lessons;v.innerHTML='<h2>'+(name==='review'?'复习队列':'课程库')+'</h2>'+(!arr.length?'<div class="card">暂无已完成课程。先完成一节课程吧。</div>':arr.map(l=>{let p=state[l.id],d=dueDate(p);return '<div class="card lesson"><span class="pill">'+esc(l.category)+'</span><h3>'+esc(l.title)+'</h3><div class="muted">'+l.time+' 分钟 · '+(p?.completed?'已完成':'未完成')+(d?' · 下次复习：'+new Date(d).toLocaleDateString('zh-CN')+(d<=Date.now()?'（到期）':''):'')+'</div><button onclick="openLesson(\''+l.id+'\')">'+(p?.completed?'复习课程':'开始学习')+'</button></div>'}).join(''));stats()}
+function openLesson(id){let l=lessons.find(x=>x.id===id);if(!l)return;document.getElementById('view').innerHTML='<article><div class="row"><span class="pill">'+esc(l.category)+' · '+l.time+' 分钟</span><button class="secondary" onclick="tab(\'courses\')">返回课程库</button></div><h2>'+esc(l.title)+'</h2>'+l.sections.map((s,i)=>'<section><h3>'+(i+1)+'. '+esc(s[0])+'</h3><p>'+esc(s[1])+'</p></section>').join('')+'<section><h3>知识检查</h3><div class="question"><strong>'+esc(l.q)+'</strong>'+l.opts.map((o,i)=>'<label><input type="radio" name="ans" value="'+i+'">'+esc(o)+'</label>').join('')+'</div><button onclick="grade(\''+id+'\')">提交答案</button><p id="result" aria-live="polite"></p></section></article>'}
+function grade(id){let l=lessons.find(x=>x.id===id),s=document.querySelector('input[name="ans"]:checked'),el=document.getElementById('result');if(!s){el.textContent='请选择答案。';return}if(Number(s.value)!==l.answer){el.textContent='尚未通过：'+l.explain;return}let p=state[id]||{},was=p.completed;p.completed=true;p.lastReviewed=Date.now();p.reviewCount=was?Math.min((p.reviewCount||0)+1,3):0;state[id]=p;save();stats();el.textContent='回答正确！'+l.explain+' 已记录学习进度，下次复习日期：'+new Date(dueDate(p)).toLocaleDateString('zh-CN')}
+stats();tab('courses');
+</script></body></html>
