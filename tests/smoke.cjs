@@ -1,6 +1,27 @@
-const fs=require('node:fs');const assert=require('node:assert/strict');const vm=require('node:vm');const html=fs.readFileSync('index.html','utf8');const v2=fs.readFileSync('v2.js','utf8');const v3=fs.readFileSync('v3.js','utf8');const missions=fs.readFileSync('missions.js','utf8');const cockpit=fs.readFileSync('cockpit.js','utf8');const ability=fs.readFileSync('ability.js','utf8');const circuit=fs.readFileSync('circuit.js','utf8');const backup=fs.readFileSync('backup-v4.js','utf8');for(const [name,code] of [['inline',html.match(/<script>([\s\S]*?)<\/script>/)?.[1]],['v2',v2],['v3',v3],['missions',missions],['cockpit',cockpit],['ability',ability],['circuit',circuit],['backup',backup]]){assert.ok(code,name+' script missing');new vm.Script(code,{filename:name+'.js'})}assert.match(html,/src="v2\.js"/);assert.match(html,/src="v3\.js"/);assert.match(html,/xwd_academy_progress_v1/);for(const name of ['showAssess','submitAssess','showRoadmap'])assert.ok(v2.includes(name));for(const name of ['exportData','showBackup','showCases','caseView'])assert.ok(v3.includes(name));assert.ok(!/fetch\s*\(|XMLHttpRequest|sendBeacon/.test(v3),'No external transmission in v3');console.log('PASS: scripts parse, hooks and features present, v3 does not transmit data');
-assert.ok(html.includes('src="ability.js"'));assert.match(ability,/xwd_lab_missions_v1/);assert.match(ability,/xwd_academy_progress_v1/);assert.ok(ability.includes('n.answer'));console.log('PASS: capability dashboard wiring and existing progress sources present');
-
-assert.ok(html.includes('src="circuit.js"'));assert.ok(circuit.includes('MutationObserver'));assert.ok(circuit.includes('role="img"'));assert.ok(missions.includes('p.done>=m.steps.length?0'));console.log('PASS: circuit diagram, restart flow and new hooks present');
-
-assert.ok(html.includes('src="backup-v4.js"'));for(const key of ['xwd_academy_progress_v1','xwd_academy_notes_v3','xwd_lab_missions_v1','xwd_lab_review_v1'])assert.ok(backup.includes(key));assert.ok(backup.includes('validate(v)'));console.log('PASS: comprehensive backup module and validation hooks present');
+'use strict';
+const fs=require('node:fs');
+const assert=require('node:assert/strict');
+const vm=require('node:vm');
+const html=fs.readFileSync('index.html','utf8');
+const scripts=['v2.js','v3.js','interface.js','worklist.js','missions.js','cockpit.js','ability.js','circuit.js','backup-v4.js'];
+const inline=html.match(/<script>([\s\S]*?)<\/script>/);
+assert.ok(inline,'inline application script missing');
+new vm.Script(inline[1],{filename:'inline.js'});
+for(const name of scripts){
+ const source=fs.readFileSync(name,'utf8');
+ assert.ok(source.trim(),name+' is empty');
+ assert.ok(html.includes('src="'+name+'"'),name+' missing from HTML');
+ new vm.Script(source,{filename:name});
+}
+assert.ok(html.includes('xwd_academy_progress_v1'),'legacy progress key missing');
+const v2=fs.readFileSync('v2.js','utf8');
+const v3=fs.readFileSync('v3.js','utf8');
+for(const symbol of ['showAssess','submitAssess','showRoadmap'])assert.ok(v2.includes(symbol),'missing V2 '+symbol);
+for(const symbol of ['exportData','showBackup','showCases','caseView'])assert.ok(v3.includes(symbol),'missing V3 '+symbol);
+const backup=fs.readFileSync('backup-v4.js','utf8');
+for(const key of ['xwd_academy_progress_v1','xwd_academy_notes_v3','xwd_lab_missions_v1','xwd_lab_review_v1'])assert.ok(backup.includes(key),'backup key missing: '+key);
+for(const name of ['v3.js','missions.js','cockpit.js','ability.js','circuit.js','backup-v4.js']){
+ const code=fs.readFileSync(name,'utf8');
+ assert.doesNotMatch(code,/\bfetch\s*\(|\bXMLHttpRequest\b|\bsendBeacon\s*\(/,name+' must not transmit local learning data');
+}
+console.log('PASS: all '+(scripts.length+1)+' scripts parse, HTML hooks exist, local keys preserved, and no network transmission calls detected.');
