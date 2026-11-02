@@ -6,7 +6,7 @@ const names={contactor:'接触器',thermal:'温升验证',fuse:'熔断器'};
 function read(key){try{const x=JSON.parse(localStorage.getItem(key)||'{}');return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}catch(_){return {}}}
 function escape(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function report(){const lessons=read(KEYS.lessons),missions=read(KEYS.missions),cards=read(KEYS.cards),notes=read(KEYS.notes);
-const rows=Object.keys(names).map(id=>{const l=lessons[id]||{},m=missions[id]||{},n=notes[id]||{};const steps=id==='thermal'?4:3;const done=Math.min(Math.max(Number(m.done)||0,0),steps);const checked=Boolean(l.v2?.passed);const legacy=Boolean(l.completed);const casePresent=Boolean(n.text&&String(n.text).trim());let level=0;if(legacy||done>0)level=1;if(done===steps||checked)level=2;if(casePresent)level=3;return {id,title:names[id],done,steps,legacy,checked,casePresent,level}});
+const rows=Object.keys(names).map(id=>{const l=lessons[id]||{},m=missions[id]||{},n=notes[id]||{};const steps=id==='thermal'?4:3;const done=Math.min(Math.max(Number(m.done)||0,0),steps);const checked=Boolean(l.v2?.passed);const legacy=Boolean(l.completed);const casePresent=Boolean(n.answer&&String(n.answer).trim());let level=0;if(legacy||done>0)level=1;if(done===steps||checked)level=2;if(casePresent)level=3;return {id,title:names[id],done,steps,legacy,checked,casePresent,level}});
 const due=Object.values(cards).filter(r=>r&&Number.isFinite(r.next)&&r.next<=Date.now()).length;
 const reviewed=Object.values(cards).filter(r=>r&&Number.isFinite(r.last)).length;
 return {rows,due,reviewed,lessons,cards,notes}}
