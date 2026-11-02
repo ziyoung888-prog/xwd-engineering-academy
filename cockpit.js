@@ -23,7 +23,7 @@ const intervals=[1,3,7,30];
 let review={};try{review=JSON.parse(localStorage.getItem(REVIEW)||'{}')||{}}catch(e){}
 function get(k){try{return JSON.parse(localStorage.getItem(k)||'{}')||{}}catch(e){return {}}}
 function save(){try{localStorage.setItem(REVIEW,JSON.stringify(review))}catch(e){alert('无法保存复习记录。')}}
-function e(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&quot;',"'":'&#39;'}[c]))}
+function e(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function nav(name){document.querySelectorAll('.toolbar button').forEach(b=>b.classList.toggle('active',b.id==='tab-'+name))}
 function button(id,label,cb){const b=document.createElement('button');b.id='tab-'+id;b.textContent=label;b.onclick=cb;document.querySelector('.toolbar').appendChild(b)}
 function due(r){return !r?.next||r.next<=Date.now()}
