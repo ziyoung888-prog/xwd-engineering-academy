@@ -1,0 +1,22 @@
+name: Verify finance course public page
+on:
+  workflow_run:
+    workflows: ["pages build and deployment"]
+    types: [completed]
+jobs:
+  verify:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Verify homepage and FIN07 route are publicly reachable
+        run: |
+          set -euo pipefail
+          BASE="https://ziyoung888-prog.github.io/xwd-engineering-academy"
+          curl --fail --location --retry 8 --retry-delay 10 --retry-all-errors --max-time 20 --silent --show-error "$BASE/" -o /tmp/academy.html
+          grep -F 'href="finance/"' /tmp/academy.html
+          curl --fail --location --retry 8 --retry-delay 10 --retry-all-errors --max-time 20 --silent --show-error "$BASE/finance/" -o /tmp/finance.html
+          grep -F 'FIN07' /tmp/finance.html
+          grep -F 'xwd_finance_learning_v1' /tmp/finance.html
+          echo "PASS: public finance page responds and contains course + local assessment."
