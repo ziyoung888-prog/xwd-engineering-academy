@@ -31,3 +31,14 @@ assert.ok(daily.includes('xwd_daily_case_v1'),'daily case storage missing');
 assert.ok(daily.includes('window.grade'),'daily exercise completion gate missing');
 console.log('PASS: daily lesson has ten sections, case submission gate and local storage');
 console.log('PASS: all '+(scripts.length+1)+' scripts parse, HTML hooks exist, local keys preserved, and no network transmission calls detected.');
+
+const finance=fs.readFileSync('finance/index.html','utf8');
+assert.ok(html.includes('href="finance/"'),'finance section missing from homepage');
+for(const token of ['FIN07','人力资本','流动性','保险','投资','税后','退休','id="quiz"','id="number"','xwd_finance_learning_v1','27分钟'])assert.ok(finance.includes(token),'finance course missing '+token);
+const financeScript=finance.match(/<script>([\s\S]*?)<\/script>/);
+assert.ok(financeScript,'finance assessment script missing');
+new vm.Script(financeScript[1],{filename:'finance-inline.js'});
+assert.doesNotMatch(finance,/\bfetch\s*\(|\bXMLHttpRequest\b|\bsendBeacon\s*\(/,'finance page must not transmit user learning data');
+assert.doesNotMatch(finance,/12,285\.51|iCost|Sunwoda|欣旺达|吴子洋|ziyoung888@gmail/,'finance page must contain fictional teaching only');
+assert.ok(finance.includes('28,000')||finance.includes('28000'),'finance scenario missing');
+console.log('PASS: independent FIN07 finance section, assessment syntax and public-data boundary.');
